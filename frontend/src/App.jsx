@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import {BrowserRouter,Routes,Route,Navigate} from 'react-router-dom';
 
 function App() {
   
 
   return (
-    <h1 className='text-rose-200'>This is employee management system</h1>
+    <BrowserRouter>
+    <Routes>
+<Route path='/' element ={<Navigate to='/admin-dashboard'/>}></Route>
+<Route path='/login' element ={<Navigate to='/login'/>}></Route>
+
+
+
+    </Routes>
+    </BrowserRouter>
   )
 }
 
