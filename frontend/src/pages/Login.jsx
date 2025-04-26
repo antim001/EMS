@@ -4,16 +4,26 @@ import axios from 'axios';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error,setError]= useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
       console.log(response);
+  
+      if (response.data.success) {
+        alert("Successfully logged in");
+      }
     } catch (error) {
-      console.log(error);
+      if (error.response && !error.response.data.success) {
+        setError(error.response.data.error);
+      } else {
+        setError("Server error");
+      }
     }
   };
+  
 
   return (
     <div className='flex flex-col items-center h-screen justify-center bg-gradient-to-b from-teal-600 from-50% to-gray-100 to-50% space-y-6 px-4'>
@@ -21,6 +31,7 @@ function Login() {
 
       <div className='border shadow-lg p-8 w-full max-w-sm bg-white rounded-xl'>
         <h2 className='text-2xl font-bold mb-6 text-center text-teal-700'>Login</h2>
+        {error && <p className='text-red-500'>{error}</p>}
         <form onSubmit={handleSubmit} className='space-y-4'>
           <div className='flex flex-col'>
             <label htmlFor='email' className='text-sm font-medium text-gray-700 mb-1'>Email</label>
