@@ -1,9 +1,25 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext,useEffect ,useNavigate} from 'react';
 
 const UserContext = createContext(); // Capitalized as convention for contexts
 
 function AuthContext({ children }) { // Capitalized component name
   const [user, setUser] = useState(null);
+  const navigate= useNavigate()
+  useEffect(()=>{
+   const verifyUser = async() =>{
+     try{
+  const response= await axios.get('/http://localhost:5000/api/auth/verify')
+  if(response.data.success){
+    setUser(response.data.user)
+  }
+     }catch(error){
+       if(error.response && !error.response.data.error){
+        navigate('/login')
+       }
+     }
+   }
+   verifyUser()
+  },[])
   
   const login = (userData) => {
     setUser(userData); // Corrected from 'setuser' to 'setUser'
