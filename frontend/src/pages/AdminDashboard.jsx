@@ -1,9 +1,12 @@
 import React from 'react'
+import { useAuth } from '../context/authContext'; // ✅ You need this line
 
 function AdminDashboard() {
+  const { user } = useAuth();
+
   return (
     <div>
-      <h1>This is an admin dashboard page</h1>
+      AdminDashboard {user?.name}
     </div>
   )
 }

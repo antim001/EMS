@@ -1,24 +1,26 @@
-import React ,{useState,createContext,useContext}from 'react'
+import React, { useState, createContext, useContext } from 'react';
 
-const userContext=createContext()
+const UserContext = createContext(); // Capitalized as convention for contexts
 
-function authContext({children}) {
-    const [user,setUser]=useState(null)
-    const login=(user)=>
-    {
-setuser(user)
-    }
-    const logout=()=>{
-      setUser(null)
-      localStorage.removeItem('token')
-    }
+function AuthContext({ children }) { // Capitalized component name
+  const [user, setUser] = useState(null);
+  
+  const login = (userData) => {
+    setUser(userData); // Corrected from 'setuser' to 'setUser'
+    localStorage.setItem('token', userData.token); // Assuming you want to store token
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+  };
+
   return (
-    <userContext.Provider value={{user,login,logout}}>
-
-{children}
-    </userContext.Provider>
-  )
+    <UserContext.Provider value={{ user, login, logout, setUser }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
-export const useAuth =()=>useContext(userContext)
 
-export default authContext
+export const useAuth = () => useContext(UserContext);
+export default AuthContext; // Capitalized export to match component name
