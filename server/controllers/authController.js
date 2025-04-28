@@ -1,6 +1,6 @@
-import User from '../models/User.js'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const login = async (req, res) => {
   try {
@@ -18,29 +18,32 @@ const login = async (req, res) => {
       return res.status(401).json({ success: false, error: "Password does not match" });
     }
 
-    // Success
-    res.status(200).json({
+    // Generate token
+    const token = jwt.sign(
+      { _id: user._id, role: user.role },
+      process.env.JWT_KEY,
+      { expiresIn: '1d' }
+    );
+
+    // Send success response (ONLY ONE)
+    return res.status(200).json({
       success: true,
       message: "Login successful",
+      token,
       user: {
         _id: user._id,
         email: user.email,
-        name: user.name, // if you have a name field
-        // optionally generate token here
+        name: user.name,
+        role: user.role,
       },
     });
-  const token=jwt.sign({_id:user._id,role:user.role},
-    process.env.JWT_KEY,{expiresIn:'1d'}
-
-  )
-  res.status(200).json({success:true,token,user:{_id:user._id,name:user.name,role:user.role},
-
-})
 
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ success: false, error: "Server error" });
+    return res.status(500).json({ success: false, error: "Server error" });
   }
 };
-
-export { login };
+const verify =(req,res)=>{
+  return res.status(200).json({success:true,user:req.user})
+}
+export { login,verify };
