@@ -1,21 +1,35 @@
-import React, { useState, createContext, useContext,useEffect ,useNavigate} from 'react';
+import React, { useState, createContext, useContext,useEffect } from 'react';
 
 const UserContext = createContext(); // Capitalized as convention for contexts
 
 function AuthContext({ children }) { // Capitalized component name
   const [user, setUser] = useState(null);
-  const navigate= useNavigate()
+  const [loading,setLoading] =useState(true)
   useEffect(()=>{
    const verifyUser = async() =>{
+
      try{
-  const response= await axios.get('/http://localhost:5000/api/auth/verify')
+      const token=localStorage.getItem('token')
+      if(token){
+        const response= await axios.get('http://localhost:5000/api/auth/verify',{
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        })
+      }
+  
   if(response.data.success){
     setUser(response.data.user)
+  }else{
+     setuser(null)
+     setLoading(false)
   }
      }catch(error){
        if(error.response && !error.response.data.error){
-        navigate('/login')
+    setUser(null)
        }
+     }finally{
+      setLoading(false)
      }
    }
    verifyUser()
@@ -32,7 +46,7 @@ function AuthContext({ children }) { // Capitalized component name
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, setUser }}>
+    <UserContext.Provider value={{ user, login, logout, setUser,loading }}>
       {children}
     </UserContext.Provider>
   );
