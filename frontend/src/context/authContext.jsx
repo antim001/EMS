@@ -1,43 +1,42 @@
-import React, { useState, createContext, useContext,useEffect } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
+import axios from 'axios';
 
-const UserContext = createContext(); // Capitalized as convention for contexts
+const UserContext = createContext();
 
-function AuthContext({ children }) { // Capitalized component name
+function AuthContext({ children }) {
   const [user, setUser] = useState(null);
-  const [loading,setLoading] =useState(true)
-  useEffect(()=>{
-   const verifyUser = async() =>{
+  const [loading, setLoading] = useState(true);
 
-     try{
-      const token=localStorage.getItem('token')
-      if(token){
-        const response= await axios.get('http://localhost:5000/api/auth/verify',{
-          headers:{
-            "Authorization":`Bearer ${token}`
+  useEffect(() => {
+    const verifyUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const response = await axios.get('http://localhost:5000/api/auth/verify', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          if (response.data.success) {
+            setUser(response.data.user);
+          } else {
+            setUser(null);
           }
-        })
+        }
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-  
-  if(response.data.success){
-    setUser(response.data.user)
-  }else{
-     setuser(null)
-     setLoading(false)
-  }
-     }catch(error){
-       if(error.response && !error.response.data.error){
-    setUser(null)
-       }
-     }finally{
-      setLoading(false)
-     }
-   }
-   verifyUser()
-  },[])
-  
+    };
+
+    verifyUser();
+  }, []);
+
   const login = (userData) => {
-    setUser(userData); // Corrected from 'setuser' to 'setUser'
-    localStorage.setItem('token', userData.token); // Assuming you want to store token
+    setUser(userData);
+    localStorage.setItem('token', userData.token);
   };
 
   const logout = () => {
@@ -46,11 +45,11 @@ function AuthContext({ children }) { // Capitalized component name
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, setUser,loading }}>
+    <UserContext.Provider value={{ user, login, logout, setUser, loading }}>
       {children}
     </UserContext.Provider>
   );
 }
 
 export const useAuth = () => useContext(UserContext);
-export default AuthContext; // Capitalized export to match component name
+export default AuthContext;
